@@ -1,0 +1,234 @@
+/* Base Styles */
+body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Hide non-active dashboard sections */
+.dashboard-section.hidden {
+    display: none;
+}
+
+/* Active nav item styling */
+.dashboard-nav-item.active {
+    color: #2196F3;
+    background-color: #E3F2FD;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #2196F3;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #1976D2;
+}
+
+/* Loading animation */
+.loading {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(33,150,243,.3);
+    border-radius: 50%;
+    border-top-color: #2196F3;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Hover effects for cards */
+.bg-white {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.bg-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Pulse animation for alerts */
+.alert-pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(33, 150, 243, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(33, 150, 243, 0);
+    }
+}
+
+/* Focus styles */
+button:focus, a:focus, input:focus, select:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
+}
+
+/* Word cloud animations */
+.word-cloud-container {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    min-height: 250px;
+}
+
+#word-cloud {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 250px;
+}
+
+.word-cloud-item {
+    position: absolute;
+    transform-origin: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    white-space: nowrap;
+    line-height: 1.2;
+    display: inline-block;
+    z-index: 1;
+    padding: 2px;
+}
+
+.word-cloud-item:hover {
+    transform: scale(1.15) !important;
+    z-index: 100;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Custom checkbox and radio styling */
+input[type="checkbox"], input[type="radio"] {
+    accent-color: #2196F3;
+}
+
+/* Chart container fixed height */
+.chart-container {
+    position: relative;
+    height: 300px;
+    max-height: 300px;
+    overflow: hidden;
+}
+
+/* Fullscreen chart */
+.chart-container.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    background-color: rgba(255, 255, 255, 0.95);
+    z-index: 9999;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.chart-container.fullscreen canvas {
+    max-height: 80vh;
+}
+
+/* Fullscreen toggle button */
+.fullscreen-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #FFF;
+    border: 1px solid #EEE;
+    border-radius: 4px;
+    padding: 5px;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s;
+}
+
+.fullscreen-btn:hover {
+    background-color: #F5F5F5;
+    transform: scale(1.05);
+}
+
+.fullscreen-btn i {
+    color: #333;
+}
+
+/* Close button for fullscreen */
+.close-fullscreen-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.close-fullscreen-btn:hover {
+    background-color: #1976D2;
+}
+
+/* Fullscreen chart title */
+.fullscreen-title {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Sidebar collapsed styles */
+.sidebar-collapsed {
+    width: 60px !important;
+}
+
+.sidebar-collapsed .sidebar-text {
+    display: none;
+}
+
+.sidebar-collapsed nav a {
+    justify-content: center;
+}
+
+.sidebar-collapsed h2 {
+    text-align: center;
+    font-size: 0;
+}
+
+.sidebar-collapsed h2::first-letter {
+    font-size: 1.125rem;
+}
+
+.main-content-expanded {
+    margin-left: 60px;
+}

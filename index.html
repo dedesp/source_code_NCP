@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Analisis Sentimen & Isu Publik - NasDem Cyber Patrol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="./css/style.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'nasdem': {
+                            'primary': '#2196F3',
+                            'secondary': '#1976D2',
+                            'accent': '#64B5F6',
+                            'dark': '#263238'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation Header -->
+    <nav class="bg-white shadow-lg border-b-4 border-nasdem-primary">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <!-- Sidebar Toggle Button -->
+                    <button id="sidebar-toggle" class="text-gray-700 hover:text-nasdem-primary mr-4 p-2 rounded-lg hover:bg-gray-100">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex-shrink-0">
+                        <img class="h-8 w-auto" src="./img/nasdem-logo.png" alt="NasDem Logo" onerror="this.style.display='none';">
+                        <span class="text-2xl font-bold text-nasdem-primary">NasDem Cyber Patrol</span>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-nasdem-primary px-3 py-2 text-sm font-medium">Dashboard</a>
+                    <a href="#" class="text-gray-700 hover:text-nasdem-primary px-3 py-2 text-sm font-medium">Analisis</a>
+                    <a href="#" class="text-gray-700 hover:text-nasdem-primary px-3 py-2 text-sm font-medium">Laporan</a>
+                    <div class="relative">
+                        <button class="flex items-center text-gray-700 hover:text-nasdem-primary">
+                            <i class="fas fa-user-circle mr-2"></i>
+                            Admin
+                            <i class="fas fa-chevron-down ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div class="flex">
+        <div id="sidebar" class="w-64 bg-white shadow-lg h-screen sticky top-0 transition-all duration-300 ease-in-out">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">Menu Utama</h2>
+                <nav class="space-y-2">
+                    <a href="#" class="dashboard-nav-item flex items-center px-4 py-2 text-nasdem-primary bg-blue-50 rounded-lg" data-section="dashboard">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        <span class="sidebar-text">Dashboard</span>
+                    </a>
+                    <a href="#" class="dashboard-nav-item flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg" data-section="keywords">
+                        <i class="fas fa-tags mr-3"></i>
+                        <span class="sidebar-text">Manajemen Keyword</span>
+                    </a>
+                    <a href="#" class="dashboard-nav-item flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg" data-section="sentiment">
+                        <i class="fas fa-chart-line mr-3"></i>
+                        <span class="sidebar-text">Analisis Sentimen</span>
+                    </a>
+                    <a href="#" class="dashboard-nav-item flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg" data-section="topics">
+                        <i class="fas fa-hashtag mr-3"></i>
+                        <span class="sidebar-text">Deteksi Topik & Tren</span>
+                    </a>
+                    <a href="#" class="dashboard-nav-item flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg" data-section="influencers">
+                        <i class="fas fa-users mr-3"></i>
+                        <span class="sidebar-text">Identifikasi Influencer</span>
+                    </a>
+                    <a href="#" class="dashboard-nav-item flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg" data-section="reports">
+                        <i class="fas fa-file-alt mr-3"></i>
+                        <span class="sidebar-text">Laporan & Alert</span>
+                    </a>
+                    <a href="#" class="dashboard-nav-item flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg" data-section="comparison">
+                        <i class="fas fa-balance-scale mr-3"></i>
+                        <span class="sidebar-text">Perbandingan</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-6">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="dashboard-section">
+                <!-- Header -->
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-gray-900">Dashboard Analisis Sentimen</h1>
+                    <p class="text-gray-600 mt-2">NasDem Cyber Patrol - Platform Monitoring Isu Publik DPD NasDem Kota Bandung</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-green-100 rounded-lg">
+                                <i class="fas fa-thumbs-up text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Sentimen Positif</p>
+                                <p class="text-2xl font-bold text-gray-900">67.3%</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-red-500">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-red-100 rounded-lg">
+                                <i class="fas fa-thumbs-down text-red-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Sentimen Negatif</p>
+                                <p class="text-2xl font-bold text-gray-900">18.7%</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-yellow-100 rounded-lg">
+                                <i class="fas fa-minus text-yellow-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Sentimen Netral</p>
+                                <p class="text-2xl font-bold text-gray-900">14.0%</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-blue-100 rounded-lg">
+                                <i class="fas fa-comments text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Total Mentions</p>
+                                <p class="text-2xl font-bold text-gray-900">12,847</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Sentiment Trend Chart -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Tren Sentimen (7 Hari Terakhir)</h3>
+                        <div class="chart-container">
+                            <canvas id="sentimentTrendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Sentiment Distribution -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Distribusi Sentimen</h3>
+                        <div class="chart-container">
+                            <canvas id="sentimentPieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Mentions and Alerts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Recent Mentions -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Mentions Terbaru</h3>
+                        <div class="space-y-4">
+                            <div class="border-l-4 border-green-500 pl-4 py-2">
+                                <p class="text-sm text-gray-600">@SentaBerita • 2 menit lalu</p>
+                                <p class="text-gray-900">"Program bantuan sosial NasDem Bandung sangat membantu warga..."</p>
+                                <span class="inline-block px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full mt-1">Positif</span>
+                            </div>
+                            <div class="border-l-4 border-red-500 pl-4 py-2">
+                                <p class="text-sm text-gray-600">@KritikKota • 15 menit lalu</p>
+                                <p class="text-gray-900">"Masih banyak jalan rusak di Bandung yang belum diperbaiki..."</p>
+                                <span class="inline-block px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full mt-1">Negatif</span>
+                            </div>
+                            <div class="border-l-4 border-yellow-500 pl-4 py-2">
+                                <p class="text-sm text-gray-600">@InfoBandung • 1 jam lalu</p>
+                                <p class="text-gray-900">"Rapat koordinasi DPD NasDem membahas program kerja 2025..."</p>
+                                <span class="inline-block px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full mt-1">Netral</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Alerts -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Alert Aktif</h3>
+                        <div class="space-y-4">
+                            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                                    <h4 class="font-medium text-red-800">Sentimen Negatif Meningkat</h4>
+                                </div>
+                                <p class="text-sm text-red-600 mt-1">Keyword "banjir bandung" mengalami peningkatan sentimen negatif 23%</p>
+                                <p class="text-xs text-red-500 mt-2">2 jam lalu</p>
+                            </div>
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <i class="fas fa-bell text-yellow-500 mr-2"></i>
+                                    <h4 class="font-medium text-yellow-800">Volume Tinggi</h4>
+                                </div>
+                                <p class="text-sm text-yellow-600 mt-1">Diskusi tentang "nasdem bandung" mencapai 1,245 mentions hari ini</p>
+                                <p class="text-xs text-yellow-500 mt-2">5 menit lalu</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>            <!-- Keywords Management Section -->
+            <div id="keywords-section" class="dashboard-section hidden">
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-gray-900">Manajemen Keyword</h1>
+                    <p class="text-gray-600 mt-2">Kelola kata kunci untuk pemantauan isu publik</p>
+                </div>
+
+                <!-- Keyword Categories -->
+                <div class="bg-white rounded-lg shadow mb-6">
+                    <div class="border-b px-6 py-4">
+                        <h2 class="text-xl font-semibold">Kategori Keyword</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="border rounded-lg p-4 bg-blue-50 border-blue-200">
+                                <h3 class="text-lg font-medium text-blue-800">Partai & Tokoh</h3>
+                                <p class="text-sm text-gray-600 mt-1">15 keyword aktif</p>
+                            </div>
+                            <div class="border rounded-lg p-4 bg-green-50 border-green-200">
+                                <h3 class="text-lg font-medium text-green-800">Isu Kota Bandung</h3>
+                                <p class="text-sm text-gray-600 mt-1">24 keyword aktif</p>
+                            </div>
+                            <div class="border rounded-lg p-4 bg-purple-50 border-purple-200">
+                                <h3 class="text-lg font-medium text-purple-800">Isu Nasional</h3>
+                                <p class="text-sm text-gray-600 mt-1">18 keyword aktif</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Keyword List -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="border-b px-6 py-4 flex justify-between items-center">
+                        <h2 class="text-xl font-semibold">Daftar Keyword Aktif</h2>
+                        <button class="px-4 py-2 bg-nasdem-primary text-white rounded-lg hover:bg-nasdem-dark">
+                            <i class="fas fa-plus mr-2"></i>Tambah Keyword
+                        </button>
+                    </div>
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead>
+                                    <tr>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keyword</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sentimen</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volume</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">NasDem Bandung</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">Partai & Tokoh</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-thumbs-up text-green-500 mr-1"></i>
+                                                <span>67.3%</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span>1,245/hari</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Aktif</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <a href="#" class="text-nasdem-primary hover:text-nasdem-dark mr-3">Edit</a>
+                                            <a href="#" class="text-red-600 hover:text-red-800">Hapus</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Banjir Bandung</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Isu Kota Bandung</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-thumbs-down text-red-500 mr-1"></i>
+                                                <span>78.2%</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span>832/hari</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Aktif</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <a href="#" class="text-nasdem-primary hover:text-nasdem-dark mr-3">Edit</a>
+                                            <a href="#" class="text-red-600 hover:text-red-800">Hapus</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Harga Pangan</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">Isu Nasional</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-thumbs-down text-red-500 mr-1"></i>
+                                                <span>65.4%</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span>1,547/hari</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Aktif</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <a href="#" class="text-nasdem-primary hover:text-nasdem-dark mr-3">Edit</a>
+                                            <a href="#" class="text-red-600 hover:text-red-800">Hapus</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sentiment Analysis Section -->
+            <div id="sentiment-section" class="dashboard-section hidden">
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-gray-900">Analisis Sentimen</h1>
+                    <p class="text-gray-600 mt-2">Analisis sentimen opini publik berdasarkan topik</p>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="bg-white rounded-lg shadow mb-6 p-4">
+                    <div class="flex flex-wrap items-center justify-between">
+                        <div class="flex space-x-4 mb-4 md:mb-0">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Keyword</label>
+                                <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-nasdem-primary focus:border-nasdem-primary rounded-md">
+                                    <option>Semua Keyword</option>
+                                    <option>NasDem Bandung</option>
+                                    <option>Banjir Bandung</option>
+                                    <option>Harga Pangan</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Periode</label>
+                                <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-nasdem-primary focus:border-nasdem-primary rounded-md">
+                                    <option>7 Hari Terakhir</option>
+                                    <option>30 Hari Terakhir</option>
+                                    <option>3 Bulan Terakhir</option>
+                                    <option>Custom...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Sumber</label>
+                                <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-nasdem-primary focus:border-nasdem-primary rounded-md">
+                                    <option>Semua Sumber</option>
+                                    <option>Twitter/X</option>
+                                    <option>Instagram</option>
+                                    <option>Berita Online</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="px-4 py-2 bg-nasdem-primary text-white rounded-lg hover:bg-nasdem-dark">
+                            <i class="fas fa-filter mr-2"></i>Terapkan Filter
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sentiment Overview -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <!-- Sentiment Chart -->
+                    <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Tren Sentimen Over Time</h3>
+                        <div class="chart-container">
+                            <canvas id="sentimentAnalysisChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Sentiment Summary -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Ringkasan Sentimen</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-green-700">Positif</span>
+                                    <span class="text-sm font-medium text-green-700">67.3%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: 67.3%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-red-700">Negatif</span>
+                                    <span class="text-sm font-medium text-red-700">18.7%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-red-500 h-2 rounded-full" style="width: 18.7%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-yellow-700">Netral</span>
+                                    <span class="text-sm font-medium text-yellow-700">14.0%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-yellow-500 h-2 rounded-full" style="width: 14.0%"></div>
+                                </div>
+                            </div>
+                            <div class="pt-4 border-t">
+                                <h4 class="text-sm font-semibold text-gray-700 mb-2">Indikator Utama:</h4>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Net Sentiment Score:</span>
+                                    <span class="text-lg font-bold text-green-600">+48.6%</span>
+                                </div>
+                                <div class="flex items-center justify-between mt-2">
+                                    <span class="text-sm text-gray-600">Confidence Score:</span>
+                                    <span class="text-lg font-bold text-blue-600">89%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sentiment Mentions -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="border-b px-6 py-4">
+                        <h2 class="text-xl font-semibold">Sampel Mentions</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex mb-4">
+                            <button class="px-4 py-2 bg-green-100 text-green-800 rounded-lg mr-2 font-medium">Positif</button>
+                            <button class="px-4 py-2 bg-gray-100 text-gray-800 rounded-lg mr-2">Negatif</button>
+                            <button class="px-4 py-2 bg-gray-100 text-gray-800 rounded-lg">Netral</button>
+                        </div>
+                        <div class="space-y-4 mt-4">
+                            <div class="border rounded-lg p-4">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                            <i class="fas fa-user text-gray-500"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="flex items-center">
+                                            <h4 class="font-medium text-gray-900">@BandungNews</h4>
+                                            <span class="ml-2 text-xs text-gray-500">Twitter/X • 2 jam lalu</span>
+                                        </div>
+                                        <p class="text-gray-700 mt-1">Program bantuan sosial dari NasDem Bandung sungguh membantu masyarakat kurang mampu di masa sulit ini. Semoga terus berlanjut!</p>
+                                        <div class="mt-2 flex items-center">
+                                            <span class="inline-block px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Positif (92%)</span>
+                                            <span class="text-xs text-gray-500 ml-2">Likes: 45 | Retweets: 12</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border rounded-lg p-4">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                            <i class="fas fa-user text-gray-500"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="flex items-center">
+                                            <h4 class="font-medium text-gray-900">@MasyarakatPeduli</h4>
+                                            <span class="ml-2 text-xs text-gray-500">Twitter/X • 5 jam lalu</span>
+                                        </div>
+                                        <p class="text-gray-700 mt-1">Terima kasih @NasdemBandung atas bantuan bencana yang cepat di wilayah kami. Respons yang tanggap dan profesional!</p>
+                                        <div class="mt-2 flex items-center">
+                                            <span class="inline-block px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Positif (95%)</span>
+                                            <span class="text-xs text-gray-500 ml-2">Likes: 87 | Retweets: 23</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border rounded-lg p-4">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                            <i class="fas fa-user text-gray-500"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="flex items-center">
+                                            <h4 class="font-medium text-gray-900">@WargaBandung</h4>
+                                            <span class="ml-2 text-xs text-gray-500">Instagram • 1 hari lalu</span>
+                                        </div>
+                                        <p class="text-gray-700 mt-1">Kegiatan sosial NasDem Bandung kemarin sangat bermanfaat bagi masyarakat. Program beasiswa untuk anak kurang mampu patut diapresiasi. #NasdemPeduli</p>
+                                        <div class="mt-2 flex items-center">
+                                            <span class="inline-block px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Positif (89%)</span>
+                                            <span class="text-xs text-gray-500 ml-2">Likes: 132 | Comments: 24</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>            <!-- Topics & Trends Section -->
+            <div id="topics-section" class="dashboard-section hidden">
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-gray-900">Deteksi Topik & Tren</h1>
+                    <p class="text-gray-600 mt-2">Identifikasi topik dan tren yang sedang berkembang di masyarakat</p>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="bg-white rounded-lg shadow mb-6 p-4">
+                    <div class="flex flex-wrap items-center justify-between">
+                        <div class="flex space-x-4 mb-4 md:mb-0">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Periode Waktu</label>
+                                <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-nasdem-primary focus:border-nasdem-primary rounded-md">
+                                    <option>7 Hari Terakhir</option>
+                                    <option>30 Hari Terakhir</option>
+                                    <option>3 Bulan Terakhir</option>
+                                    <option>Custom...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Kategori Topik</label>
+                                <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-nasdem-primary focus:border-nasdem-primary rounded-md">
+                                    <option>Semua Kategori</option>
+                                    <option>Politik</option>
+                                    <option>Ekonomi</option>
+                                    <option>Sosial</option>
+                                    <option>Infrastruktur</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="px-4 py-2 bg-nasdem-primary text-white rounded-lg hover:bg-nasdem-dark">
+                            <i class="fas fa-filter mr-2"></i>Terapkan Filter
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Topic Word Cloud -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Word Cloud Topik</h3>
+                        <div class="h-64 border rounded-lg p-4 bg-gray-50 relative word-cloud-container">
+                            <div id="word-cloud" class="h-full w-full"></div>
+                        </div>
+                    </div>
+
+                    <!-- Top Topics -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Topik Teratas</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-gray-700">Infrastruktur</span>
+                                    <span class="text-sm font-medium text-gray-700">24.5%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-nasdem-primary h-2 rounded-full" style="width: 24.5%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-gray-700">Pendidikan</span>
+                                    <span class="text-sm font-medium text-gray-700">18.7%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-nasdem-primary h-2 rounded-full" style="width: 18.7%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-gray-700">UMKM</span>
+                                    <span class="text-sm font-medium text-gray-700">16.2%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-nasdem-primary h-2 rounded-full" style="width: 16.2%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-gray-700">Banjir</span>
+                                    <span class="text-sm font-medium text-gray-700">14.8%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-nasdem-primary h-2 rounded-full" style="width: 14.8%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-gray-700">Harga Pangan</span>
+                                    <span class="text-sm font-medium text-gray-700">12.3%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-nasdem-primary h-2 rounded-full" style="width: 12.3%"></div>
+                                </div>
+                            </div>
+                            <div class="pt-4 mt-2 border-t">
+                                <button class="text-sm text-nasdem-primary hover:underline">Lihat Semua Topik</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trending Topics over time -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Tren Topik (30 Hari Terakhir)</h3>
+                    <div class="chart-container">
+                        <canvas id="topicTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Emerging Topics -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="border-b px-6 py-4">
+                        <h2 class="text-xl font-semibold">Topik Baru Muncul</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead>
+                                    <tr>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Topik</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pertumbuhan</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sentimen</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Terdeteksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Renovasi Alun-alun Bandung</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">Infrastruktur</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex items-center text-green-600">
+                                                <i class="fas fa-arrow-up mr-1"></i>
+                                                <span>243%</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-thumbs-up text-green-500 mr-1"></i>
+                                                <span>62%</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2 hari lalu</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Program Beasiswa Mahasiswa Kurang Mampu</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">Pendidikan</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex items-center text-green-600">
+                                                <i class="fas fa-arrow-up mr-1"></i>
+                                                <span>178%</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-thumbs-up text-green-500 mr-1"></i>
+                                                <span>81%</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">3 hari lalu</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Kemacetan di Pusat Kota</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">Transportasi</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex items-center text-green-600">
+                                                <i class="fas fa-arrow-up mr-1"></i>
+                                                <span>156%</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-thumbs-down text-red-500 mr-1"></i>
+                                                <span>72%</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1 hari lalu</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Influencer Section -->
+            <div id="influencers-section" class="dashboard-section hidden">
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-gray-900">Identifikasi Influencer</h1>
+                    <p class="text-gray-600 mt-2">Temukan akun dan individu yang paling berpengaruh dalam diskusi publik</p>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="bg-white rounded-lg shadow mb-6 p-4">
+                    <div class="flex flex-wrap items-center justify-between">
+                        <div class="flex space-x-4 mb-4 md:mb-0">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Topik</label>
+                                <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-nasdem-primary focus:border-nasdem-primary rounded-md">
+                                    <option>Semua Topik</option>
+                                    <option>NasDem Bandung</option>
+                                    <option>Infrastruktur</option>
+                                    <option>Pendidikan</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Platform</label>
+                                <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-nasdem-primary focus:border-nasdem-primary rounded-md">
+                                    <option>Semua Platform</option>
+                                    <option>Twitter/X</option>
+                                    <option>Instagram</option>
+                                    <option>Media Online</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Sentimen</label>
+                                <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-nasdem-primary focus:border-nasdem-primary rounded-md">
+                                    <option>Semua Sentimen</option>
+                                    <option>Positif</option>
+                                    <option>Negatif</option>
+                                    <option>Netral</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="px-4 py-2 bg-nasdem-primary text-white rounded-lg hover:bg-nasdem-dark">
+                            <i class="fas fa-filter mr-2"></i>Terapkan Filter
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Top Influencers -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-nasdem-primary">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-lg">Top Twitter/X Influencer</h3>
+                            <i class="fab fa-twitter text-blue-400 text-xl"></i>
+                        </div>
+                        <div class="flex items-center mb-4">
+                            <div class="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                                <i class="fas fa-user text-gray-500 text-2xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-bold text-lg">@BandungUpdate</h4>
+                                <p class="text-sm text-gray-600">Akun berita lokal Bandung</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Followers:</span>
+                                <span class="font-medium">124,578</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Engagement Rate:</span>
+                                <span class="font-medium">4.8%</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Sentimen Dominan:</span>
+                                <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Positif</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Pengaruh:</span>
+                                <div class="flex">
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star-half-alt text-yellow-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-nasdem-primary">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-lg">Top Instagram Influencer</h3>
+                            <i class="fab fa-instagram text-pink-500 text-xl"></i>
+                        </div>
+                        <div class="flex items-center mb-4">
+                            <div class="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                                <i class="fas fa-user text-gray-500 text-2xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-bold text-lg">@InfoBandung</h4>
+                                <p class="text-sm text-gray-600">Komunitas info kota Bandung</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Followers:</span>
+                                <span class="font-medium">287,954</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Engagement Rate:</span>
+                                <span class="font-medium">5.2%</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Sentimen Dominan:</span>
+                                <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">Netral</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Pengaruh:</span>
+                                <div class="flex">
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-nasdem-primary">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-lg">Top Media Influencer</h3>
+                            <i class="fas fa-newspaper text-gray-700 text-xl"></i>
+                        </div>
+                        <div class="flex items-center mb-4">
+                            <div class="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                                <i class="fas fa-user text-gray-500 text-2xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="font-bold text-lg">BandungToday</h4>
+                                <p class="text-sm text-gray-600">Portal berita Bandung</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Jangkauan:</span>
+                                <span class="font-medium">450,000+</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Artikel/Minggu:</span>
+                                <span class="font-medium">24</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Sentimen Dominan:</span>
+                                <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Positif</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Pengaruh:</span>
+                                <div class="flex">
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="far fa-star text-yellow-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Influencer Table -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="border-b px-6 py-4 flex justify-between items-center">
+                        <h2 class="text-xl font-semibold">Daftar Influencer Teratas</h2>
+                        <div>
+                            <button class="px-4 py-2 bg-nasdem-primary text-white rounded-lg hover:bg-nasdem-dark">
+                                <i class="fas fa-download mr-2"></i>Ekspor Data
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead>
+                                    <tr>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama/Username</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Platform</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Followers</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Engagement</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sentimen</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Skor Pengaruh</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center">
+                                                    <i class="fas fa-user text-gray-500"></i>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">@InfoBandung</div>
+                                                    <div class="text-sm text-gray-500">Komunitas info kota Bandung</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <i class="fab fa-instagram text-pink-500 mr-1"></i> Instagram
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">287,954</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">5.2%</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">Netral</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">92/100</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center">
+                                                    <i class="fas fa-user text-gray-500"></i>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">@BandungUpdate</div>
+                                                    <div class="text-sm text-gray-500">Akun berita lokal Bandung</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <i class="fab fa-twitter text-blue-400 mr-1"></i> Twitter/X
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">124,578</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">4.8%</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Positif</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">87/100</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center">
+                                                    <i class="fas fa-user text-gray-500"></i>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">BandungToday</div>
+                                                    <div class="text-sm text-gray-500">Portal berita Bandung</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <i class="fas fa-newspaper text-gray-700 mr-1"></i> Media Online
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">450,000+</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">3.5%</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Positif</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">81/100</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>            <!-- Reports Section -->
+            <div id="reports-section" class="dashboard-section hidden">
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-gray-900">Laporan & Alert</h1>
+                    <p class="text-gray-600 mt-2">Kelola laporan otomatis dan atur notifikasi alert</p>
+                </div>
+
+                <!-- Reports and Alerts Tabs -->
+                <div class="bg-white rounded-lg shadow mb-6">
+                    <div class="border-b border-gray-200">
+                        <nav class="flex -mb-px">
+                            <button id="tab-reports" class="text-nasdem-primary border-nasdem-primary py-4 px-6 border-b-2 font-medium text-sm focus:outline-none">
+                                Laporan Terjadwal
+                            </button>
+                            <button id="tab-alerts" class="text-gray-500 hover:text-gray-700 py-4 px-6 border-b-2 border-transparent font-medium text-sm focus:outline-none">
+                                Pengaturan Alert
+                            </button>
+                        </nav>
+                    </div>
+
+                    <!-- Scheduled Reports Tab -->
+                    <div id="panel-reports" class="p-6">
+                        <div class="flex justify-between mb-6">
+                            <h3 class="text-lg font-semibold">Laporan Terjadwal</h3>
+                            <button class="px-4 py-2 bg-nasdem-primary text-white rounded-lg hover:bg-nasdem-dark">
+                                <i class="fas fa-plus mr-2"></i>Buat Laporan Baru
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead>
+                                    <tr>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Laporan</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Frekuensi</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penerima</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Format</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Laporan Mingguan Sentimen</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Setiap Senin, 08:00</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">tim.strategi@nasdem-bandung.id</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PDF</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Aktif</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <a href="#" class="text-nasdem-primary hover:text-nasdem-dark mr-3">Edit</a>
+                                            <a href="#" class="text-red-600 hover:text-red-800">Hapus</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Laporan Bulanan Tren Topik</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Setiap 1, 09:00</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">pimpinan@nasdem-bandung.id</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PDF, Excel</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Aktif</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <a href="#" class="text-nasdem-primary hover:text-nasdem-dark mr-3">Edit</a>
+                                            <a href="#" class="text-red-600 hover:text-red-800">Hapus</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Laporan Harian Isu Krusial</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Setiap Hari, 17:00</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">media@nasdem-bandung.id</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Email</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Aktif</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <a href="#" class="text-nasdem-primary hover:text-nasdem-dark mr-3">Edit</a>
+                                            <a href="#" class="text-red-600 hover:text-red-800">Hapus</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Alert Settings Tab (Initially Hidden) -->
+                    <div id="panel-alerts" class="p-6 hidden">
+                        <div class="flex justify-between mb-6">
+                            <h3 class="text-lg font-semibold">Pengaturan Alert</h3>
+                            <button class="px-4 py-2 bg-nasdem-primary text-white rounded-lg hover:bg-nasdem-dark">
+                                <i class="fas fa-plus mr-2"></i>Tambah Alert
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead>
+                                    <tr>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Alert</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kondisi</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Threshold</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Penerima</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metode</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Alert Sentimen Negatif</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Sentimen Negatif Naik</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">> 20% dalam 1 jam</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Tim Media & Humas</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Email, SMS</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Aktif</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <a href="#" class="text-nasdem-primary hover:text-nasdem-dark mr-3">Edit</a>
+                                            <a href="#" class="text-red-600 hover:text-red-800">Hapus</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Alert Volume Tinggi</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Volume Mention Tinggi</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">> 1000 mentions/jam</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Tim Strategi</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Email</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Aktif</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <a href="#" class="text-nasdem-primary hover:text-nasdem-dark mr-3">Edit</a>
+                                            <a href="#" class="text-red-600 hover:text-red-800">Hapus</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Alert Keyword Baru</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Topik Baru Terdeteksi</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Pertumbuhan > 150%</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Tim Riset</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Email, Dashboard</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Aktif</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <a href="#" class="text-nasdem-primary hover:text-nasdem-dark mr-3">Edit</a>
+                                            <a href="#" class="text-red-600 hover:text-red-800">Hapus</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Alerts -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="border-b px-6 py-4">
+                        <h2 class="text-xl font-semibold">Alert Terbaru (7 Hari Terakhir)</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="border rounded-lg p-4 bg-red-50 border-red-200">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                                            <i class="fas fa-exclamation-triangle text-red-600"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <h4 class="font-medium text-red-800">Alert Sentimen Negatif: Banjir Bandung</h4>
+                                            <span class="text-xs text-gray-500">2 hari lalu, 14:23</span>
+                                        </div>
+                                        <p class="text-sm text-red-700 mt-1">Sentimen negatif meningkat 23% dalam 1 jam. Total 832 mentions dengan 78.2% sentimen negatif.</p>
+                                        <div class="mt-2 flex justify-between items-center">
+                                            <div>
+                                                <span class="text-xs text-gray-600">Penerima: Tim Media & Humas</span>
+                                            </div>
+                                            <a href="#" class="text-xs text-nasdem-primary hover:underline">Lihat Detail</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border rounded-lg p-4 bg-yellow-50 border-yellow-200">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+                                            <i class="fas fa-bell text-yellow-600"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <h4 class="font-medium text-yellow-800">Alert Volume Tinggi: NasDem Bandung</h4>
+                                            <span class="text-xs text-gray-500">1 hari lalu, 09:15</span>
+                                        </div>
+                                        <p class="text-sm text-yellow-700 mt-1">Volume mentions meningkat menjadi 1,245/jam. 67.3% sentimen positif terkait bantuan sosial.</p>
+                                        <div class="mt-2 flex justify-between items-center">
+                                            <div>
+                                                <span class="text-xs text-gray-600">Penerima: Tim Strategi</span>
+                                            </div>
+                                            <a href="#" class="text-xs text-nasdem-primary hover:underline">Lihat Detail</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border rounded-lg p-4 bg-blue-50 border-blue-200">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                            <i class="fas fa-lightbulb text-blue-600"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <h4 class="font-medium text-blue-800">Alert Topik Baru: Renovasi Alun-alun Bandung</h4>
+                                            <span class="text-xs text-gray-500">3 hari lalu, 16:42</span>
+                                        </div>
+                                        <p class="text-sm text-blue-700 mt-1">Topik baru terdeteksi dengan pertumbuhan 243%. 62% sentimen positif dari 345 mentions.</p>
+                                        <div class="mt-2 flex justify-between items-center">
+                                            <div>
+                                                <span class="text-xs text-gray-600">Penerima: Tim Riset</span>
+                                            </div>
+                                            <a href="#" class="text-xs text-nasdem-primary hover:underline">Lihat Detail</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Section -->
+            <div id="comparison-section" class="dashboard-section hidden">
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-gray-900">Perbandingan</h1>
+                    <p class="text-gray-600 mt-2">Bandingkan sentimen dan volume diskusi antar keyword, topik, atau entitas</p>
+                </div>
+
+                <!-- Comparison Setup -->
+                <div class="bg-white rounded-lg shadow mb-6 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Setup Perbandingan</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Item yang Dibandingkan</label>
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="compare-nasdem" checked class="h-4 w-4 text-nasdem-primary focus:ring-nasdem-primary border-gray-300 rounded">
+                                    <label for="compare-nasdem" class="ml-2 block text-sm text-gray-700">NasDem Bandung</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="compare-partaiA" checked class="h-4 w-4 text-nasdem-primary focus:ring-nasdem-primary border-gray-300 rounded">
+                                    <label for="compare-partaiA" class="ml-2 block text-sm text-gray-700">Partai A Bandung</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="compare-partaiB" checked class="h-4 w-4 text-nasdem-primary focus:ring-nasdem-primary border-gray-300 rounded">
+                                    <label for="compare-partaiB" class="ml-2 block text-sm text-gray-700">Partai B Bandung</label>
+                                </div>
+                                <div class="pt-2">
+                                    <button class="text-sm text-nasdem-primary hover:underline">+ Tambah Item</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Metrik</label>
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <input type="radio" id="metric-sentiment" name="metric" checked class="h-4 w-4 text-nasdem-primary focus:ring-nasdem-primary border-gray-300">
+                                    <label for="metric-sentiment" class="ml-2 block text-sm text-gray-700">Sentimen</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" id="metric-volume" name="metric" class="h-4 w-4 text-nasdem-primary focus:ring-nasdem-primary border-gray-300">
+                                    <label for="metric-volume" class="ml-2 block text-sm text-gray-700">Volume Mentions</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" id="metric-engagement" name="metric" class="h-4 w-4 text-nasdem-primary focus:ring-nasdem-primary border-gray-300">
+                                    <label for="metric-engagement" class="ml-2 block text-sm text-gray-700">Engagement Rate</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" id="metric-reach" name="metric" class="h-4 w-4 text-nasdem-primary focus:ring-nasdem-primary border-gray-300">
+                                    <label for="metric-reach" class="ml-2 block text-sm text-gray-700">Jangkauan</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Periode Waktu</label>
+                            <select class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-nasdem-primary focus:border-nasdem-primary rounded-md">
+                                <option>7 Hari Terakhir</option>
+                                <option>30 Hari Terakhir</option>
+                                <option>3 Bulan Terakhir</option>
+                                <option>Custom...</option>
+                            </select>
+                            <div class="mt-4">
+                                <button class="w-full px-4 py-2 bg-nasdem-primary text-white rounded-lg hover:bg-nasdem-dark">
+                                    <i class="fas fa-sync-alt mr-2"></i>Update Perbandingan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Sentiment Comparison -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Perbandingan Sentimen</h3>
+                        <div class="chart-container">
+                            <canvas id="sentimentComparisonChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Volume Comparison -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Perbandingan Volume Mentions</h3>
+                        <div class="chart-container">
+                            <canvas id="volumeComparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Table -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="border-b px-6 py-4 flex justify-between items-center">
+                        <h2 class="text-xl font-semibold">Detail Perbandingan</h2>
+                        <div>
+                            <button class="px-4 py-2 bg-nasdem-primary text-white rounded-lg hover:bg-nasdem-dark">
+                                <i class="fas fa-download mr-2"></i>Ekspor Data
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead>
+                                    <tr>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sentimen Positif</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sentimen Negatif</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sentimen Netral</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Mentions</th>
+                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Engagement Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">NasDem Bandung</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">67.3%</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">18.7%</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-600">14.0%</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">12,847</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">3.8%</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Partai A Bandung</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">48.5%</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">32.2%</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-600">19.3%</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">9,452</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2.7%</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Partai B Bandung</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">52.1%</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">28.9%</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-600">19.0%</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">10,583</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">3.2%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white p-6 shadow-inner mt-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center text-sm text-gray-500">
+                <p>© 2025 Parametrix Indonesia. Semua hak dilindungi.</p>
+                <p class="mt-1">NasDem Cyber Patrol - Platform Analisis Sentimen & Isu Publik Berbasis AI - Versi 1.0</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="./js/main.js"></script>
+</body>
+</html>
