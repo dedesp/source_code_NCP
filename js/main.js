@@ -13,14 +13,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Fullscreen Chart Functionality
     initFullscreenCharts();
     
-    // Initialize Sidebar Toggle
-    initSidebarToggle();
-    
     // Show topics section for debugging
     showTopicsSection();
     
     // Simulate data loading for demo purposes
     simulateLoading();
+    
+    // Load real data from backend
+    loadRealData();
+    
+    // Refresh data every 30 seconds
+    setInterval(loadRealData, 30000);
 });
 
 // Function to show topics section for debugging
@@ -852,53 +855,121 @@ function simulateLoading() {
             refreshTime.remove();
         }, 2000);
     }, 60000);
-}// Initialize Sidebar Toggle functionality
-function initSidebarToggle() {
-    const sidebarToggle = document.getElementById('sidebar-toggle');
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.querySelector('.flex-1');
+}// API Configuration
+const API_BASE_URL = 'http://localhost:8000/api/v1';
+
+// API Service
+class APIService {
+    constructor(baseURL) {
+        this.baseURL = baseURL;
+    }
     
-    if (sidebarToggle && sidebar) {
-        sidebarToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('sidebar-collapsed');
-            mainContent.classList.toggle('main-content-expanded');
-            
-            // Store sidebar state in localStorage
-            const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
-            localStorage.setItem('sidebarCollapsed', isCollapsed);
-            
-            // Update icon
-            const icon = sidebarToggle.querySelector('i');
-            if (isCollapsed) {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-chevron-right');
-            } else {
-                icon.classList.remove('fa-chevron-right');
-                icon.classList.add('fa-bars');
+    async fetchData(endpoint) {
+        try {
+            const response = await fetch(`${this.baseURL}${endpoint}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-        });
-        
-        // Set sidebar to collapsed by default
-        sidebar.classList.add('sidebar-collapsed');
-        mainContent.classList.add('main-content-expanded');
-        
-        // Update icon
-        const icon = sidebarToggle.querySelector('i');
-        icon.classList.remove('fa-bars');
-        icon.classList.add('fa-chevron-right');
-        
-        // Store collapsed state
-        localStorage.setItem('sidebarCollapsed', 'true');
-        
-        // But if user has explicitly expanded it before, respect that setting
-        const savedState = localStorage.getItem('sidebarCollapsed');
-        if (savedState === 'false') {
-            sidebar.classList.remove('sidebar-collapsed');
-            mainContent.classList.remove('main-content-expanded');
-            
-            // Update icon back
-            icon.classList.remove('fa-chevron-right');
-            icon.classList.add('fa-bars');
+            return await response.json();
+        } catch (error) {
+            console.error('API Error:', error);
+            throw error;
         }
+    }
+    
+    async getDashboardStats() {
+        return this.fetchData('/dashboard/stats');
+    }
+}
+
+// Initialize API service
+const apiService = new APIService(API_BASE_URL);
+
+// Load real data from backend
+async function loadRealData() {
+    try {
+        console.log('🔄 Loading data from backend...');
+        
+        // Load dashboard stats
+        const stats = await apiService.getDashboardStats();
+        console.log('✅ Dashboard stats loaded:', stats);
+        
+        // Update dashboard stats
+        updateDashboardStats(stats);
+        
+        // Update charts if they exist
+        updateChartsWithRealData(stats);
+        
+        console.log('✅ All data updated successfully!');
+        
+    } catch (error) {
+        console.error('❌ Failed to load real data:', error);
+        showNotification('Failed to connect to backend', 'error');
+    }
+}
+
+// Update dashboard stats in UI
+function updateDashboardStats(stats) {
+    // Update total mentions
+    const totalMentionsEl = document.querySelector('[data-total-mentions]');
+    if (totalMentionsEl) {
+        totalMentionsEl.textContent = stats.total_mentions.toLocaleString();
+    }
+    
+    // Update sentiment percentages
+    const positiveEl = document.querySelector('[data-positive-percent]');
+    if (positiveEl) {
+        positiveEl.textContent = `${stats.sentiment_distribution.positive}%`;
+    }
+    
+    const negativeEl = document.querySelector('[data-negative-percent]');
+    if (negativeEl) {
+        negativeEl.textContent = `${stats.sentiment_distribution.negative}%`;
+    }
+    
+    const neutralEl = document.querySelector('[data-neutral-percent]');
+    if (neutralEl) {
+        neutralEl.textContent = `${stats.sentiment_distribution.neutral}%`;
+    }
+    
+    // Update platform stats
+    if (stats.platforms) {
+        const twitterEl = document.querySelector('[data-twitter-count]');
+        if (twitterEl) twitterEl.textContent = stats.platforms.twitter.toLocaleString();
+        
+        const facebookEl = document.querySelector('[data-facebook-count]');
+        if (facebookEl) facebookEl.textContent = stats.platforms.facebook.toLocaleString();
+        
+        const instagramEl = document.querySelector('[data-instagram-count]');
+        if (instagramEl) instagramEl.textContent = stats.platforms.instagram.toLocaleString();
+        
+        const newsEl = document.querySelector('[data-news-count]');
+        if (newsEl) newsEl.textContent = stats.platforms.news.toLocaleString();
+    }
+}
+
+// Update charts with real data
+function updateChartsWithRealData(stats) {
+    // Update sentiment pie chart
+    if (window.sentimentChart) {
+        window.sentimentChart.data.datasets[0].data = [
+            stats.sentiment_distribution.positive,
+            stats.sentiment_distribution.negative,
+            stats.sentiment_distribution.neutral
+        ];
+        window.sentimentChart.update();
+        console.log('📊 Sentiment chart updated');
+    }
+    
+    // Update platform chart if exists
+    if (window.platformChart && stats.platforms) {
+        window.platformChart.data.datasets[0].data = [
+            stats.platforms.twitter,
+            stats.platforms.facebook,
+            stats.platforms.instagram,
+            stats.platforms.news
+        ];
+        window.platformChart.update();
+        console.log('📊 Platform chart updated');
     }
 }
