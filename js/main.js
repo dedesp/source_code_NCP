@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Dashboard Navigation
     initDashboardNav();
     
+    // Initialize Sidebar Toggle
+    initSidebarToggle(); // ← TAMBAHKAN INI
+    
     // Initialize Tab Navigation for Reports Section
     initTabNavigation();
     
@@ -836,17 +839,17 @@ function renderDashboardCharts() {
     }
     
     // Platform Distribution Chart (ganti yang lama)
-    const platformCtx = document.getElementById('platformChart');
-    if (platformCtx) {
-        window.platformChart = new Chart(platformCtx, {
+    const sentimentCtx = document.getElementById('sentimentChart'); 
+    if (sentimentCtx) {
+        window.sentimentChart = new Chart(sentimentCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Twitter', 'Facebook', 'Instagram', 'News'],
+                labels: ['Twitter', 'Facebook', 'Instagram', 'Berita Online'], // ← PLATFORM
                 datasets: [{
-                    data: [8500, 3200, 2100, 2047], // Akan diupdate dari backend
+                    data: [8500, 3200, 2100, 2047], // ← ANGKA PLATFORM (bukan %)
                     backgroundColor: [
                         '#1DA1F2', // Twitter blue
-                        '#4267B2', // Facebook blue  
+                        '#4267B2', // Facebook blue
                         '#E4405F', // Instagram pink
                         '#FF6B35'  // News orange
                     ],
@@ -864,11 +867,6 @@ function renderDashboardCharts() {
                             padding: 20,
                             usePointStyle: true
                         }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Distribusi Platform',
-                        font: { size: 16, weight: 'bold' }
                     }
                 }
             }
@@ -990,15 +988,51 @@ function updateDashboardStats(stats) {
 
 // Update charts with real data
 function updateChartsWithRealData(stats) {
-    // Update platform chart dengan data backend
-    if (window.platformChart && stats.platforms) {
-        window.platformChart.data.datasets[0].data = [
-            stats.platforms.twitter,
-            stats.platforms.facebook,
-            stats.platforms.instagram,
-            stats.platforms.news
+    // Update PLATFORM chart (bukan sentiment chart)
+    if (window.sentimentChart && stats.platforms) {
+        window.sentimentChart.data.labels = ['Twitter', 'Facebook', 'Instagram', 'Berita Online'];
+        window.sentimentChart.data.datasets[0].data = [
+            stats.platforms.twitter,   // 8500
+            stats.platforms.facebook,  // 3200
+            stats.platforms.instagram, // 2100
+            stats.platforms.news       // 2047
         ];
-        window.platformChart.update();
+        window.sentimentChart.update();
         console.log('📊 Platform chart updated');
+    }
+}
+
+// Tambahkan function ini di main.js
+function initSidebarToggle() {
+    const toggleBtn = document.getElementById('sidebar-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('main-content');
+    
+    if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', function() {
+            // Toggle sidebar visibility
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('md:hidden');
+            
+            // Adjust main content margin
+            if (mainContent) {
+                mainContent.classList.toggle('md:ml-64');
+                mainContent.classList.toggle('md:ml-0');
+            }
+            
+            // Save state to localStorage
+            const isHidden = sidebar.classList.contains('hidden');
+            localStorage.setItem('sidebarHidden', isHidden);
+        });
+        
+        // Load saved state
+        const savedState = localStorage.getItem('sidebarHidden');
+        if (savedState === 'true') {
+            sidebar.classList.add('hidden', 'md:hidden');
+            if (mainContent) {
+                mainContent.classList.remove('md:ml-64');
+                mainContent.classList.add('md:ml-0');
+            }
+        }
     }
 }
