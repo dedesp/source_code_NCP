@@ -846,12 +846,9 @@ function renderDashboardCharts() {
             data: {
                 labels: ['Twitter', 'Facebook', 'Instagram', 'Berita Online'], // ← PLATFORM
                 datasets: [{
-                    data: [8500, 3200, 2100, 2047], // ← ANGKA PLATFORM (bukan %)
+                    data: [8500, 3200, 2100, 2047], // ← PLATFORM DATA
                     backgroundColor: [
-                        '#1DA1F2', // Twitter blue
-                        '#4267B2', // Facebook blue
-                        '#E4405F', // Instagram pink
-                        '#FF6B35'  // News orange
+                        '#1DA1F2', '#4267B2', '#E4405F', '#FF6B35'
                     ],
                     borderWidth: 2,
                     borderColor: '#ffffff'
