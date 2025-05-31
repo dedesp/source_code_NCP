@@ -990,18 +990,7 @@ function updateDashboardStats(stats) {
 
 // Update charts with real data
 function updateChartsWithRealData(stats) {
-    // Update sentiment pie chart
-    if (window.sentimentChart) {
-        window.sentimentChart.data.datasets[0].data = [
-            stats.sentiment_distribution.positive,
-            stats.sentiment_distribution.negative,
-            stats.sentiment_distribution.neutral
-        ];
-        window.sentimentChart.update();
-        console.log('📊 Sentiment chart updated');
-    }
-    
-    // Update platform chart if exists
+    // Update platform chart dengan data backend
     if (window.platformChart && stats.platforms) {
         window.platformChart.data.datasets[0].data = [
             stats.platforms.twitter,
