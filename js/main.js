@@ -4,8 +4,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Dashboard Navigation
     initDashboardNav();
     
+    // Initialize Header Navigation
+    initHeaderNavigation(); // ← TAMBAHKAN INI
+    
     // Initialize Sidebar Toggle
-    initSidebarToggle(); // ← TAMBAHKAN INI
+    initSidebarToggle();
     
     // Initialize Tab Navigation for Reports Section
     initTabNavigation();
@@ -27,6 +30,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Refresh data every 30 seconds
     setInterval(loadRealData, 30000);
+    
+    // Set dashboard as active by default
+    setActiveHeaderNav('dashboard');
 });
 
 // Function to show topics section for debugging
@@ -66,7 +72,7 @@ function showTopicsSection() {
 
 // Handle Dashboard Navigation
 function initDashboardNav() {
-    const navItems = document.querySelectorAll('.dashboard-nav-item');
+    const navItems = document.querySelectorAll('.dashboard-nav-item'); // ← Pastikan class ini
     const sections = document.querySelectorAll('.dashboard-section');
     
     navItems.forEach(item => {
@@ -82,24 +88,179 @@ function initDashboardNav() {
             });
             
             // Show selected section
-            document.getElementById(`${sectionToShow}-section`).classList.remove('hidden');
+            const targetSection = document.getElementById(`${sectionToShow}-section`);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
             
             // Update active state in navigation
             navItems.forEach(navItem => {
-                navItem.classList.remove('bg-blue-50', 'text-nasdem-primary');
-                navItem.classList.add('text-gray-700', 'hover:bg-gray-100');
+                navItem.classList.remove('active', 'bg-blue-50', 'text-blue-600');
+                navItem.classList.add('text-gray-700');
             });
             
-            this.classList.remove('text-gray-700', 'hover:bg-gray-100');
-            this.classList.add('bg-blue-50', 'text-nasdem-primary');
+            // Set active state
+            this.classList.remove('text-gray-700');
+            this.classList.add('active', 'bg-blue-50', 'text-blue-600');
             
             // Reinitialize word cloud if topics section is shown
             if (sectionToShow === 'topics') {
-                console.log('Topics section shown, initializing word cloud');
-                setTimeout(() => initWordCloud(), 100); // Small delay to ensure container is visible
+                setTimeout(() => initWordCloud(), 100);
             }
+            
+            console.log(`Navigated to ${sectionToShow} section`);
         });
     });
+    
+    // Set dashboard as active by default
+    const dashboardNav = document.querySelector('[data-section="dashboard"]');
+    if (dashboardNav) {
+        dashboardNav.classList.add('active', 'bg-blue-50', 'text-blue-600');
+    }
+}
+
+// Header Navigation Functions
+function initHeaderNavigation() {
+    // Initialize top navigation
+    const navDashboard = document.getElementById('nav-dashboard');
+    const navAnalisis = document.getElementById('nav-analisis');
+    const navLaporan = document.getElementById('nav-laporan');
+    
+    if (navDashboard) {
+        navDashboard.addEventListener('click', function(e) {
+            e.preventDefault();
+            setActiveHeaderNav('dashboard');
+            showDashboardSection();
+            console.log('Navigate to Dashboard');
+        });
+    }
+    
+    if (navAnalisis) {
+        navAnalisis.addEventListener('click', function(e) {
+            e.preventDefault();
+            setActiveHeaderNav('analisis');
+            showAnalisisSection();
+            console.log('Navigate to Analisis');
+        });
+    }
+    
+    if (navLaporan) {
+        navLaporan.addEventListener('click', function(e) {
+            e.preventDefault();
+            setActiveHeaderNav('laporan');
+            showLaporanSection();
+            console.log('Navigate to Laporan');
+        });
+    }
+    
+    // Initialize user menu dropdown
+    initUserMenuDropdown();
+}
+
+// Set active navigation state
+function setActiveHeaderNav(activeSection) {
+    const navItems = ['nav-dashboard', 'nav-analisis', 'nav-laporan'];
+    
+    navItems.forEach(navId => {
+        const navElement = document.getElementById(navId);
+        if (navElement) {
+            navElement.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+            navElement.classList.add('text-gray-700');
+        }
+    });
+    
+    const activeNav = document.getElementById(`nav-${activeSection}`);
+    if (activeNav) {
+        activeNav.classList.remove('text-gray-700');
+        activeNav.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+    }
+}
+
+// User menu dropdown functionality
+function initUserMenuDropdown() {
+    const userMenuButton = document.getElementById('user-menu-button');
+    const userMenuDropdown = document.getElementById('user-menu-dropdown');
+    
+    if (userMenuButton && userMenuDropdown) {
+        // Toggle dropdown on button click
+        userMenuButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            userMenuDropdown.classList.toggle('hidden');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!userMenuButton.contains(e.target) && !userMenuDropdown.contains(e.target)) {
+                userMenuDropdown.classList.add('hidden');
+            }
+        });
+        
+        // Close dropdown when pressing Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                userMenuDropdown.classList.add('hidden');
+            }
+        });
+    }
+}
+
+// Section navigation functions (placeholder)
+function showDashboardSection() {
+    // Hide all sections, show dashboard
+    hideAllSections();
+    const dashboardSection = document.querySelector('[data-section="dashboard"]');
+    if (dashboardSection) {
+        dashboardSection.style.display = 'block';
+    }
+}
+
+function showAnalisisSection() {
+    // Hide all sections, show analisis
+    hideAllSections();
+    const analisisSection = document.querySelector('[data-section="analisis"]');
+    if (analisisSection) {
+        analisisSection.style.display = 'block';
+    } else {
+        console.log('Analisis section not implemented yet');
+        showNotification('Halaman Analisis dalam pengembangan', 'info');
+    }
+}
+
+function showLaporanSection() {
+    // Hide all sections, show laporan
+    hideAllSections();
+    const laporanSection = document.querySelector('[data-section="laporan"]');
+    if (laporanSection) {
+        laporanSection.style.display = 'block';
+    } else {
+        console.log('Laporan section not implemented yet');
+        showNotification('Halaman Laporan dalam pengembangan', 'info');
+    }
+}
+
+function hideAllSections() {
+    const sections = document.querySelectorAll('[data-section]');
+    sections.forEach(section => {
+        section.style.display = 'none';
+    });
+}
+
+// Notification function
+function showNotification(message, type = 'info') {
+    // Simple notification - you can enhance this later
+    const notification = document.createElement('div');
+    notification.className = `fixed top-20 right-4 p-4 rounded-md shadow-lg z-50 ${
+        type === 'info' ? 'bg-blue-500 text-white' : 
+        type === 'success' ? 'bg-green-500 text-white' : 
+        type === 'error' ? 'bg-red-500 text-white' : 'bg-gray-500 text-white'
+    }`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        document.body.removeChild(notification);
+    }, 3000);
 }
 
 // Initialize Word Cloud with improved overlap prevention
@@ -1007,29 +1168,20 @@ function initSidebarToggle() {
     
     if (toggleBtn && sidebar) {
         toggleBtn.addEventListener('click', function() {
-            // Toggle sidebar visibility
-            sidebar.classList.toggle('hidden');
-            sidebar.classList.toggle('md:hidden');
+            console.log('Sidebar toggle clicked'); // Debug
             
-            // Adjust main content margin
+            // Toggle sidebar visibility dengan Tailwind classes
+            sidebar.classList.toggle('-translate-x-full');
+            
+            // Adjust main content margin jika ada
             if (mainContent) {
-                mainContent.classList.toggle('md:ml-64');
-                mainContent.classList.toggle('md:ml-0');
+                mainContent.classList.toggle('ml-64');
+                mainContent.classList.toggle('ml-0');
             }
             
-            // Save state to localStorage
-            const isHidden = sidebar.classList.contains('hidden');
-            localStorage.setItem('sidebarHidden', isHidden);
+            console.log('Sidebar classes:', sidebar.className); // Debug
         });
-        
-        // Load saved state
-        const savedState = localStorage.getItem('sidebarHidden');
-        if (savedState === 'true') {
-            sidebar.classList.add('hidden', 'md:hidden');
-            if (mainContent) {
-                mainContent.classList.remove('md:ml-64');
-                mainContent.classList.add('md:ml-0');
-            }
-        }
+    } else {
+        console.error('Toggle button atau sidebar tidak ditemukan');
     }
 }

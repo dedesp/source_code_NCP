@@ -24,137 +24,286 @@
             }
         }
     </script>
+    
+    <style>
+        /* Sidebar Styles */
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Sidebar Menu Items */
+        .dashboard-nav-item {
+            transition: all 0.2s ease;
+        }
+
+        .dashboard-nav-item:hover {
+            background-color: #f3f4f6;
+            transform: translateX(2px);
+        }
+
+        .dashboard-nav-item.active {
+            background-color: #eff6ff;
+            color: #2563eb;
+            border-right: 3px solid #2563eb;
+        }
+
+        .dashboard-nav-item.active i {
+            color: #2563eb;
+        }
+
+        /* Chart Fullscreen Styles */
+        .chart-container {
+            position: relative;
+        }
+
+        .fullscreen-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .fullscreen-btn:hover {
+            background: white;
+        }
+
+        .chart-container.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: white;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .close-fullscreen-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 10000;
+        }
+
+        .fullscreen-title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        /* Alert Pulse Animation */
+        .alert-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Word Cloud Styles */
+        #word-cloud {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .word-cloud-item {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .word-cloud-item:hover {
+            transform: scale(1.1);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
     <!-- Navigation Header -->
-    <nav class="bg-white shadow-lg border-b-4 border-nasdem-primary">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <!-- Sidebar Toggle Button -->
-                    <!-- Hamburger button di header -->
-<button id="sidebar-toggle" class="p-2 rounded-md hover:bg-gray-100">
-    <i class="fas fa-bars text-gray-600"></i>
-</button>
-                    <div class="flex-shrink-0">
-                        <img class="h-8 w-auto" src="./img/nasdem-logo.png" alt="NasDem Logo" onerror="this.style.display='none';">
-                        <span class="text-2xl font-bold text-nasdem-primary">NasDem Cyber Patrol</span>
-                    </div>
-                </div>
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#" class="text-gray-700 hover:text-nasdem-primary px-3 py-2 text-sm font-medium">Dashboard</a>
-                    <a href="#" class="text-gray-700 hover:text-nasdem-primary px-3 py-2 text-sm font-medium">Analisis</a>
-                    <a href="#" class="text-gray-700 hover:text-nasdem-primary px-3 py-2 text-sm font-medium">Laporan</a>
-                    <div class="relative">
-                        <button class="flex items-center text-gray-700 hover:text-nasdem-primary">
-                            <i class="fas fa-user-circle mr-2"></i>
-                            Admin
-                            <i class="fas fa-chevron-down ml-1"></i>
-                        </button>
-                    </div>
+    <header class="bg-white shadow-sm border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
+        <div class="flex items-center justify-between px-4 py-3">
+            <!-- Left Section: Toggle + App Name -->
+            <div class="flex items-center space-x-3">
+                <button id="sidebar-toggle" class="p-2 rounded-md hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-bars text-gray-600"></i>
+                </button>
+                <div class="flex items-center space-x-2">
+                    <h1 class="text-xl font-bold text-blue-600">NasDem Cyber Patrol</h1>
                 </div>
             </div>
-        </div>
-    </nav>
-
-    <!-- Sidebar -->
-    <div class="flex">
-        <div id="sidebar" class="w-64 bg-white shadow-lg h-screen sticky top-0 transition-all duration-300 ease-in-out">
-            <div class="p-4">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Menu Utama</h2>
-                <nav class="space-y-2">
-                    <a href="#" class="dashboard-nav-item flex items-center px-4 py-2 text-nasdem-primary bg-blue-50 rounded-lg" data-section="dashboard">
-                        <i class="fas fa-tachometer-alt mr-3"></i>
-                        <span class="sidebar-text">Dashboard</span>
+            
+            <!-- Right Section: Navigation Menu -->
+            <div class="flex items-center space-x-6">
+                <nav class="hidden md:flex items-center space-x-6">
+                    <a href="#" id="nav-dashboard" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+                        Dashboard
                     </a>
-                    <a href="#" class="dashboard-nav-item flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg" data-section="keywords">
-                        <i class="fas fa-tags mr-3"></i>
-                        <span class="sidebar-text">Manajemen Keyword</span>
+                    <a href="#" id="nav-analisis" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+                        Analisis
                     </a>
-                    <a href="#" class="dashboard-nav-item flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg" data-section="sentiment">
-                        <i class="fas fa-chart-line mr-3"></i>
-                        <span class="sidebar-text">Analisis Sentimen</span>
-                    </a>
-                    <a href="#" class="dashboard-nav-item flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg" data-section="topics">
-                        <i class="fas fa-hashtag mr-3"></i>
-                        <span class="sidebar-text">Deteksi Topik & Tren</span>
-                    </a>
-                    <a href="#" class="dashboard-nav-item flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg" data-section="influencers">
-                        <i class="fas fa-users mr-3"></i>
-                        <span class="sidebar-text">Identifikasi Influencer</span>
-                    </a>
-                    <a href="#" class="dashboard-nav-item flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg" data-section="reports">
-                        <i class="fas fa-file-alt mr-3"></i>
-                        <span class="sidebar-text">Laporan & Alert</span>
-                    </a>
-                    <a href="#" class="dashboard-nav-item flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg" data-section="comparison">
-                        <i class="fas fa-balance-scale mr-3"></i>
-                        <span class="sidebar-text">Perbandingan</span>
+                    <a href="#" id="nav-laporan" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+                        Laporan
                     </a>
                 </nav>
+                
+                <!-- User Menu -->
+                <div class="relative">
+                    <button id="user-menu-button" class="flex items-center space-x-2 text-gray-700 hover:text-gray-900 transition-colors">
+                        <i class="fas fa-user-circle text-xl"></i>
+                        <span class="hidden md:inline">Admin</span>
+                        <i class="fas fa-chevron-down text-sm"></i>
+                    </button>
+                    
+                    <!-- User Dropdown -->
+                    <div id="user-menu-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 hidden z-60">
+                        <div class="py-1">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-user mr-2"></i>Profile
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-cog mr-2"></i>Settings
+                            </a>
+                            <hr class="my-1">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+    </header>
 
-        <!-- Main Content -->
-        <div class="flex-1 p-6">
-            <!-- Dashboard Section -->
-            <div id="dashboard-section" class="dashboard-section">
-                <!-- Header -->
-                <div class="mb-6">
-                    <h1 class="text-3xl font-bold text-gray-900">Dashboard Analisis Sentimen</h1>
-                    <p class="text-gray-600 mt-2">NasDem Cyber Patrol - Platform Monitoring Isu Publik DPD NasDem Kota Bandung</p>
+    <!-- Sidebar -->
+    <aside id="sidebar" class="bg-white w-64 min-h-screen shadow-lg fixed left-0 top-16 z-40">
+        <div class="p-6">
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Menu Utama</h3>
+            
+            <nav class="space-y-2">
+                <!-- Dashboard -->
+                <a href="#" class="dashboard-nav-item flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors" data-section="dashboard">
+                    <i class="fas fa-chart-line w-5 h-5 mr-3 text-blue-500"></i>
+                    <span>Dashboard</span>
+                </a>
+                
+                <!-- Manajemen Keyword -->
+                <a href="#" class="dashboard-nav-item flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors" data-section="keywords">
+                    <i class="fas fa-tags w-5 h-5 mr-3 text-green-500"></i>
+                    <span>Manajemen Keyword</span>
+                </a>
+                
+                <!-- Analisis Sentimen -->
+                <a href="#" class="dashboard-nav-item flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors" data-section="sentiment">
+                    <i class="fas fa-heart w-5 h-5 mr-3 text-red-500"></i>
+                    <span>Analisis Sentimen</span>
+                </a>
+                
+                <!-- Deteksi Topik & Tren -->
+                <a href="#" class="dashboard-nav-item flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors" data-section="topics">
+                    <i class="fas fa-hashtag w-5 h-5 mr-3 text-purple-500"></i>
+                    <span>Deteksi Topik & Tren</span>
+                </a>
+                
+                <!-- Identifikasi Influencer -->
+                <a href="#" class="dashboard-nav-item flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors" data-section="influencers">
+                    <i class="fas fa-users w-5 h-5 mr-3 text-orange-500"></i>
+                    <span>Identifikasi Influencer</span>
+                </a>
+                
+                <!-- Laporan & Alert -->
+                <a href="#" class="dashboard-nav-item flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors" data-section="reports">
+                    <i class="fas fa-file-alt w-5 h-5 mr-3 text-indigo-500"></i>
+                    <span>Laporan & Alert</span>
+                </a>
+                
+                <!-- Perbandingan -->
+                <a href="#" class="dashboard-nav-item flex items-center px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors" data-section="comparison">
+                    <i class="fas fa-balance-scale w-5 h-5 mr-3 text-teal-500"></i>
+                    <span>Perbandingan</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-6">
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="dashboard-section">
+            <!-- Header -->
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-900">Dashboard Analisis Sentimen</h1>
+                <p class="text-gray-600 mt-2">NasDem Cyber Patrol - Platform Monitoring Isu Publik DPD NasDem Kota Bandung</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-green-100 rounded-lg">
+                            <i class="fas fa-thumbs-up text-green-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Sentimen Positif</p>
+                            <div class="text-2xl font-bold text-green-600" data-positive-percent>67.3%</div>
+                        </div>
+                    </div>
                 </div>
-
-                <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
-                        <div class="flex items-center">
-                            <div class="p-2 bg-green-100 rounded-lg">
-                                <i class="fas fa-thumbs-up text-green-600"></i>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-600">Sentimen Positif</p>
-                                <div class="text-2xl font-bold text-green-600" data-positive-percent>67.3%</div>
-                            </div>
+                <div class="bg-white rounded-lg shadow p-6 border-l-4 border-red-500">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-red-100 rounded-lg">
+                            <i class="fas fa-thumbs-down text-red-600"></i>
                         </div>
-                    </div>
-                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-red-500">
-                        <div class="flex items-center">
-                            <div class="p-2 bg-red-100 rounded-lg">
-                                <i class="fas fa-thumbs-down text-red-600"></i>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-600">Sentimen Negatif</p>
-                                <div class="text-2xl font-bold text-red-600" data-negative-percent>18.7%</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
-                        <div class="flex items-center">
-                            <div class="p-2 bg-yellow-100 rounded-lg">
-                                <i class="fas fa-minus text-yellow-600"></i>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-600">Sentimen Netral</p>
-                                <div class="text-2xl font-bold text-yellow-600" data-neutral-percent>14.0%</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
-                        <div class="flex items-center">
-                            <div class="p-2 bg-blue-100 rounded-lg">
-                                <i class="fas fa-comments text-blue-600"></i>
-                            </div>
-                            <div class="ml-4">
-                                <p class="text-sm font-medium text-gray-600">Total Mentions</p>
-                                <div class="text-2xl font-bold text-gray-900" data-total-mentions>15,847</div>
-                            </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Sentimen Negatif</p>
+                            <div class="text-2xl font-bold text-red-600" data-negative-percent>18.7%</div>
                         </div>
                     </div>
                 </div>
+                <div class="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-yellow-100 rounded-lg">
+                            <i class="fas fa-minus text-yellow-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Sentimen Netral</p>
+                            <div class="text-2xl font-bold text-yellow-600" data-neutral-percent>14.0%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-blue-100 rounded-lg">
+                            <i class="fas fa-comments text-blue-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Total Mentions</p>
+                            <div class="text-2xl font-bold text-gray-900" data-total-mentions>15,847</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                <!-- Platform Stats Container -->
-                <div class="grid grid-cols-4 gap-6 mb-8">
+            <!-- Platform Stats Container -->
+            <div class="grid grid-cols-4 gap-6 mb-8">
     <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
         <div class="flex items-center justify-between">
             <div>
