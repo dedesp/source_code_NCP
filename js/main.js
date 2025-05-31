@@ -1185,3 +1185,181 @@ function initSidebarToggle() {
         console.error('Toggle button atau sidebar tidak ditemukan');
     }
 }
+
+// Topics API Integration
+async function loadTopicsData() {
+    try {
+        console.log('🔄 Loading topics data from backend...');
+        
+        // Load trending topics
+        const topicsResponse = await fetch(`${API_BASE_URL}/api/v1/topics/trending?limit=10&period=24h`);
+        const topicsData = await topicsResponse.json();
+        
+        // Load trending keywords
+        const keywordsResponse = await fetch(`${API_BASE_URL}/api/v1/topics/keywords?limit=20`);
+        const keywordsData = await keywordsResponse.json();
+        
+        console.log('✅ Topics data loaded:', topicsData);
+        console.log('✅ Keywords data loaded:', keywordsData);
+        
+        // Update Topics UI
+        updateTopicsDisplay(topicsData);
+        updateKeywordsDisplay(keywordsData);
+        
+        return { topics: topicsData, keywords: keywordsData };
+        
+    } catch (error) {
+        console.error('❌ Error loading topics data:', error);
+        // Fallback to mock data if API fails
+        updateTopicsDisplay(getMockTopicsData());
+        updateKeywordsDisplay(getMockKeywordsData());
+    }
+}
+
+function updateTopicsDisplay(data) {
+    const container = document.getElementById('topics-container');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Trending Topics (${data.period})</h2>
+            <p class="text-gray-600 mb-4">Total: ${data.total_topics} topics</p>
+        </div>
+        
+        <div class="grid gap-6">
+            ${data.topics.map(topic => `
+                <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow cursor-pointer"
+                     onclick="showTopicDetail('${topic.id}')">
+                    
+                    <!-- Topic Header -->
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">${topic.name}</h3>
+                            <div class="flex items-center space-x-4 text-sm text-gray-600">
+                                <span>📊 ${topic.mentions.toLocaleString()} mentions</span>
+                                <span class="trending-score">🔥 ${topic.trending_score}/10</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="sentiment-badge ${getSentimentColor(topic.sentiment_score)}">
+                                ${getSentimentLabel(topic.sentiment_score)}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sentiment Distribution -->
+                    <div class="mb-4">
+                        <div class="text-sm text-gray-600 mb-2">Sentiment Distribution</div>
+                        <div class="flex rounded-lg overflow-hidden h-3">
+                            <div class="bg-green-500" style="width: ${topic.sentiment_distribution.positive}%"></div>
+                            <div class="bg-red-500" style="width: ${topic.sentiment_distribution.negative}%"></div>
+                            <div class="bg-gray-400" style="width: ${topic.sentiment_distribution.neutral}%"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>Positive ${topic.sentiment_distribution.positive}%</span>
+                            <span>Negative ${topic.sentiment_distribution.negative}%</span>
+                            <span>Neutral ${topic.sentiment_distribution.neutral}%</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Keywords -->
+                    <div class="mb-4">
+                        <div class="text-sm text-gray-600 mb-2">Keywords</div>
+                        <div class="flex flex-wrap gap-2">
+                            ${topic.keywords.map(keyword => `
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                    ${keyword}
+                                </span>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Platform Distribution -->
+                    <div class="grid grid-cols-4 gap-2 text-center text-xs">
+                        <div class="platform-item">
+                            <div class="text-gray-500">Twitter</div>
+                            <div class="font-semibold text-gray-800">${topic.platform_distribution.twitter.toLocaleString()}</div>
+                        </div>
+                        <div class="platform-item">
+                            <div class="text-gray-500">Facebook</div>
+                            <div class="font-semibold text-gray-800">${topic.platform_distribution.facebook.toLocaleString()}</div>
+                        </div>
+                        <div class="platform-item">
+                            <div class="text-gray-500">Instagram</div>
+                            <div class="font-semibold text-gray-800">${topic.platform_distribution.instagram.toLocaleString()}</div>
+                        </div>
+                        <div class="platform-item">
+                            <div class="text-gray-500">Berita Online</div>
+                            <div class="font-semibold text-gray-800">${topic.platform_distribution.news.toLocaleString()}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function updateKeywordsDisplay(data) {
+    const container = document.getElementById('keywords-container');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Trending Keywords</h2>
+            <p class="text-gray-600 mb-4">Total: ${data.total_keywords} keywords</p>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+            ${data.keywords.map(keyword => `
+                <div class="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow">
+                    <div class="font-semibold text-gray-800">${keyword.text}</div>
+                    <div class="text-gray-500 text-sm">${keyword.mentions.toLocaleString()} mentions</div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+// Mock data functions (for fallback)
+function getMockTopicsData() {
+    return {
+        period: '24 Jam Terakhir',
+        total_topics: 150,
+        topics: Array.from({ length: 10 }, (_, i) => ({
+            id: `topic-${i + 1}`,
+            name: `Topik Populer ${i + 1}`,
+            mentions: Math.floor(Math.random() * 1000),
+            trending_score: Math.floor(Math.random() * 10) + 1,
+            sentiment_score: Math.random() > 0.5 ? 1 : -1,
+            sentiment_distribution: {
+                positive: Math.random() * 100,
+                negative: Math.random() * 100,
+                neutral: Math.random() * 100
+            },
+            keywords: Array.from({ length: 3 }, () => `Keyword ${Math.floor(Math.random() * 100)}`),
+            platform_distribution: {
+                twitter: Math.floor(Math.random() * 500),
+                facebook: Math.floor(Math.random() * 500),
+                instagram: Math.floor(Math.random() * 500),
+                news: Math.floor(Math.random() * 500)
+            }
+        }))
+    };
+}
+
+function getMockKeywordsData() {
+    return {
+        total_keywords: 20,
+        keywords: Array.from({ length: 20 }, (_, i) => ({
+            text: `Keyword ${i + 1}`,
+            mentions: Math.floor(Math.random() * 1000)
+        }))
+    };
+}
+
+// Detail topic page (placeholder)
+function showTopicDetail(topicId) {
+    console.log('Show detail for topic:', topicId);
+    // Navigate to topic detail page or show modal
+    // window.location.href = `/topics/${topicId}`;
+}

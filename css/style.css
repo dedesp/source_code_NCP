@@ -232,3 +232,40 @@ input[type="checkbox"], input[type="radio"] {
 .main-content-expanded {
     margin-left: 60px;
 }
+
+/* Topics Page Styles */
+.sentiment-positive {
+    @apply bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.sentiment-negative {
+    @apply bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.sentiment-neutral {
+    @apply bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.trending-score {
+    @apply font-semibold;
+}
+
+.keyword-card {
+    @apply transition-all duration-200;
+}
+
+.keyword-card:hover {
+    @apply transform scale-105;
+}
+
+.platform-stat {
+    @apply p-2 rounded-lg bg-gray-50;
+}
+
+.category-badge {
+    @apply px-2 py-1 rounded-full text-xs font-medium;
+}
+
+.sentiment-indicator {
+    @apply px-2 py-1 rounded text-xs font-medium;
+}
