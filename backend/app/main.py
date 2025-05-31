@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-# Import router dashboard
+# Import routers
 from app.api.v1.endpoints import dashboard
+from app.api.v1.endpoints import topics  # Import baru
 
 app = FastAPI(
     title="PASIP-AI Backend",
@@ -25,11 +26,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include dashboard router
+# Include routers
 app.include_router(
     dashboard.router,
     prefix="/api/v1/dashboard",
     tags=["dashboard"]
+)
+
+# Include topics router
+app.include_router(
+    topics.router,
+    prefix="/api/v1/topics",
+    tags=["topics"]
 )
 
 @app.get("/")
