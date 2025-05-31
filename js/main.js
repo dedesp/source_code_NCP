@@ -1191,18 +1191,33 @@ async function loadTopicsData() {
     try {
         console.log('🔄 Loading topics data from backend...');
         
+        const period = document.getElementById('topics-period')?.value || '24h';
+        const category = document.getElementById('keywords-category')?.value || 'all';
+        
         // Load trending topics
-        const topicsResponse = await fetch(`${API_BASE_URL}/api/v1/topics/trending?limit=10&period=24h`);
+        const topicsUrl = `${API_BASE_URL}/topics/trending?limit=10&period=${period}`;
+        console.log('📡 Fetching:', topicsUrl);
+        
+        const topicsResponse = await fetch(topicsUrl);
+        if (!topicsResponse.ok) {
+            throw new Error(`Topics API error: ${topicsResponse.status}`);
+        }
         const topicsData = await topicsResponse.json();
         
         // Load trending keywords
-        const keywordsResponse = await fetch(`${API_BASE_URL}/api/v1/topics/keywords?limit=20`);
+        const keywordsUrl = `${API_BASE_URL}/topics/keywords?limit=20${category !== 'all' ? `&category=${category}` : ''}`;
+        console.log('📡 Fetching:', keywordsUrl);
+        
+        const keywordsResponse = await fetch(keywordsUrl);
+        if (!keywordsResponse.ok) {
+            throw new Error(`Keywords API error: ${keywordsResponse.status}`);
+        }
         const keywordsData = await keywordsResponse.json();
         
         console.log('✅ Topics data loaded:', topicsData);
         console.log('✅ Keywords data loaded:', keywordsData);
         
-        // Update Topics UI
+        // Update UI
         updateTopicsDisplay(topicsData);
         updateKeywordsDisplay(keywordsData);
         
@@ -1210,9 +1225,20 @@ async function loadTopicsData() {
         
     } catch (error) {
         console.error('❌ Error loading topics data:', error);
-        // Fallback to mock data if API fails
-        updateTopicsDisplay(getMockTopicsData());
-        updateKeywordsDisplay(getMockKeywordsData());
+        
+        // Show error message to user
+        const container = document.getElementById('topics-container');
+        if (container) {
+            container.innerHTML = `
+                <div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+                    <h3 class="text-red-800 font-semibold mb-2">⚠️ Error Loading Topics</h3>
+                    <p class="text-red-600">${error.message}</p>
+                    <button onclick="loadTopicsData()" class="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                        🔄 Retry
+                    </button>
+                </div>
+            `;
+        }
     }
 }
 
@@ -1274,29 +1300,51 @@ function updateTopicsDisplay(data) {
                         </div>
                     </div>
                     
-                    <!-- Platform Distribution -->
+                    <!-- Platform Distribution - FIX: platforms bukan platform_distribution -->
                     <div class="grid grid-cols-4 gap-2 text-center text-xs">
-                        <div class="platform-item">
+                        <div class="platform-stat">
+                            <div class="text-blue-600 font-semibold">${topic.platforms.twitter}</div>
                             <div class="text-gray-500">Twitter</div>
-                            <div class="font-semibold text-gray-800">${topic.platform_distribution.twitter.toLocaleString()}</div>
                         </div>
-                        <div class="platform-item">
+                        <div class="platform-stat">
+                            <div class="text-blue-800 font-semibold">${topic.platforms.facebook}</div>
                             <div class="text-gray-500">Facebook</div>
-                            <div class="font-semibold text-gray-800">${topic.platform_distribution.facebook.toLocaleString()}</div>
                         </div>
-                        <div class="platform-item">
+                        <div class="platform-stat">
+                            <div class="text-pink-600 font-semibold">${topic.platforms.instagram}</div>
                             <div class="text-gray-500">Instagram</div>
-                            <div class="font-semibold text-gray-800">${topic.platform_distribution.instagram.toLocaleString()}</div>
                         </div>
-                        <div class="platform-item">
-                            <div class="text-gray-500">Berita Online</div>
-                            <div class="font-semibold text-gray-800">${topic.platform_distribution.news.toLocaleString()}</div>
+                        <div class="platform-stat">
+                            <div class="text-gray-800 font-semibold">${topic.platforms.news}</div>
+                            <div class="text-gray-500">News</div>
                         </div>
+                    </div>
+                    
+                    <!-- Timestamp -->
+                    <div class="text-xs text-gray-400 mt-4 border-t pt-2">
+                        Last updated: ${formatTimestamp(topic.last_updated)}
                     </div>
                 </div>
             `).join('')}
         </div>
     `;
+}
+
+// Add missing helper functions
+function getSentimentColor(score) {
+    if (score > 0.3) return 'sentiment-positive';
+    if (score < -0.3) return 'sentiment-negative';
+    return 'sentiment-neutral';
+}
+
+function getSentimentLabel(score) {
+    if (score > 0.3) return 'Positive';
+    if (score < -0.3) return 'Negative';
+    return 'Neutral';
+}
+
+function formatTimestamp(timestamp) {
+    return new Date(timestamp).toLocaleString('id-ID');
 }
 
 function updateKeywordsDisplay(data) {
@@ -1337,12 +1385,13 @@ function getMockTopicsData() {
                 neutral: Math.random() * 100
             },
             keywords: Array.from({ length: 3 }, () => `Keyword ${Math.floor(Math.random() * 100)}`),
-            platform_distribution: {
+            platforms: {
                 twitter: Math.floor(Math.random() * 500),
                 facebook: Math.floor(Math.random() * 500),
                 instagram: Math.floor(Math.random() * 500),
                 news: Math.floor(Math.random() * 500)
-            }
+            },
+            last_updated: new Date(Date.now() - Math.random() * 1000 * 60 * 60 * 24).toISOString()
         }))
     };
 }
@@ -1362,4 +1411,95 @@ function showTopicDetail(topicId) {
     console.log('Show detail for topic:', topicId);
     // Navigate to topic detail page or show modal
     // window.location.href = `/topics/${topicId}`;
+}
+
+// Add event listeners for Topics page
+document.addEventListener('DOMContentLoaded', function() {
+    // Topics page event listeners
+    const topicsPeriodSelect = document.getElementById('topics-period');
+    const keywordsCategorySelect = document.getElementById('keywords-category');
+    const refreshTopicsBtn = document.getElementById('refresh-topics');
+    
+    if (topicsPeriodSelect) {
+        topicsPeriodSelect.addEventListener('change', function() {
+            loadTopicsData();
+        });
+    }
+    
+    if (keywordsCategorySelect) {
+        keywordsCategorySelect.addEventListener('change', function() {
+            loadTopicsData();
+        });
+    }
+    
+    if (refreshTopicsBtn) {
+        refreshTopicsBtn.addEventListener('click', function() {
+            loadTopicsData();
+        });
+    }
+});
+
+// Update navigation function
+function navigateToSection(sectionId) {
+    console.log(`🔄 Navigating to: ${sectionId}`);
+    
+    // Hide all sections
+    hideAllSections();
+    
+    // Show requested section
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.classList.remove('hidden');
+        console.log(`✅ Section ${sectionId} shown`);
+    } else {
+        console.error(`❌ Section ${sectionId} not found`);
+        return;
+    }
+    
+    // Load section-specific data
+    switch(sectionId) {
+        case 'dashboard-section':
+            loadDashboardData();
+            break;
+        case 'topics-section':
+            loadTopicsData();
+            break;
+        default:
+            console.log(`No specific loader for ${sectionId}`);
+    }
+    
+    // Update active navigation
+    updateActiveNavigation(sectionId);
+}
+
+function hideAllSections() {
+    const sections = document.querySelectorAll('.dashboard-section');
+    sections.forEach(section => {
+        section.classList.add('hidden');
+    });
+}
+
+function updateActiveNavigation(activeSection) {
+    // Remove active class from all nav items
+    const navItems = document.querySelectorAll('.dashboard-nav-item');
+    navItems.forEach(item => {
+        item.classList.remove('active', 'bg-blue-50', 'text-blue-600');
+        item.classList.add('text-gray-700');
+    });
+    
+    // Add active class to current nav item
+    const activeNav = document.querySelector(`[onclick*="${activeSection}"]`);
+    if (activeNav) {
+        activeNav.classList.add('active', 'bg-blue-50', 'text-blue-600');
+        activeNav.classList.remove('text-gray-700');
+    }
+}
+
+// Specific navigation functions
+function navigateToDeteksiTopik() {
+    navigateToSection('topics-section');
+}
+
+function navigateToDashboard() {
+    navigateToSection('dashboard-section');
 }
