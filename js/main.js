@@ -834,6 +834,46 @@ function renderDashboardCharts() {
             }
         });
     }
+    
+    // Platform Distribution Chart (ganti yang lama)
+    const platformCtx = document.getElementById('platformChart');
+    if (platformCtx) {
+        window.platformChart = new Chart(platformCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Twitter', 'Facebook', 'Instagram', 'News'],
+                datasets: [{
+                    data: [8500, 3200, 2100, 2047], // Akan diupdate dari backend
+                    backgroundColor: [
+                        '#1DA1F2', // Twitter blue
+                        '#4267B2', // Facebook blue  
+                        '#E4405F', // Instagram pink
+                        '#FF6B35'  // News orange
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Distribusi Platform',
+                        font: { size: 16, weight: 'bold' }
+                    }
+                }
+            }
+        });
+    }
 }
 
 // Simulate loading effects (for demo purposes)
